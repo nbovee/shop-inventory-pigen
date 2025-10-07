@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Pantry Backup Service
+Requires=pantry-backup.service
+
+[Timer]
+Unit=pantry-backup.service
+OnBootSec=1min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target

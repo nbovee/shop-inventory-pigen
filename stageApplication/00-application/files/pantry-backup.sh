@@ -3,12 +3,11 @@
 # Script to mount USB drives and run django backup command
 set -e
 
-# Path to Django project
-PROJECT_PATH="/var/www/shop-inventory"
-
+# Load configuration
+source /etc/pantry/config
 
 # Create base mount directory with proper permissions
-MOUNT_BASE="/tmp/shop-backup-mounts"
+MOUNT_BASE="/tmp/pantry-backup-mounts"
 if [ ! -d "$MOUNT_BASE" ]; then
     mkdir -p "$MOUNT_BASE"
     chmod 755 "$MOUNT_BASE"
@@ -42,10 +41,9 @@ done
 
 
 # Run the Django backup command
-cd "$PROJECT_PATH"
+cd "${APP_INSTALL_DIR}"
 
 # Activate virtual environment
-source /etc/shop-inventory/config
 source "${APP_INSTALL_DIR}/venv/bin/activate"
 
 # Run the backup command

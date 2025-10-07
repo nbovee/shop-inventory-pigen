@@ -1,0 +1,13 @@
+[Unit]
+Description=Pantry Database Backup Service
+After=network.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/pantry/config
+ExecStart=/usr/local/bin/pantry-backup.sh
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

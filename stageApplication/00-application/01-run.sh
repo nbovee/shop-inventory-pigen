@@ -29,18 +29,16 @@ echo "Copy project files from the files directory"
 cp -r files/shop-inventory/* "${ROOTFS_DIR}${APP_INSTALL_DIR}"
 install -m 640 files/requirements.txt "${ROOTFS_DIR}${APP_INSTALL_DIR}"
 echo "Copying systemd service & configuration files"
-install -m 640 files/shop-inventory.service "${ROOTFS_DIR}/etc/systemd/system/"
-install -m 640 files/nginx-shop-inventory.conf "${ROOTFS_DIR}/etc/nginx/sites-available/"
-install -m 640 files/shop-wifi-setup.service "${ROOTFS_DIR}/etc/systemd/system/"
-install -m 640 files/shop-backup.service "${ROOTFS_DIR}/etc/systemd/system/"
-install -m 640 files/shop-backup.timer "${ROOTFS_DIR}/etc/systemd/system/"
-install -m 640 files/shop-inventory-socket.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
-install -m 640 files/shop-inventory-logs.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
-install -m 640 files/dnsmasq.conf "${ROOTFS_DIR}/etc/dnsmasq.conf"
-install -m 755 files/shop-backup.sh "${ROOTFS_DIR}/usr/local/bin/"
+install -m 640 files/pantry.service "${ROOTFS_DIR}/etc/systemd/system/"
+install -m 640 files/nginx-pantry.conf "${ROOTFS_DIR}/etc/nginx/sites-available/"
+install -m 640 files/pantry-backup.service "${ROOTFS_DIR}/etc/systemd/system/"
+install -m 640 files/pantry-backup.timer "${ROOTFS_DIR}/etc/systemd/system/"
+install -m 640 files/pantry-socket.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
+install -m 640 files/pantry-logs.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
+install -m 755 files/pantry-backup.sh "${ROOTFS_DIR}/usr/local/bin/"
 
 echo "Copying config file"
-install -m 640 "${BASE_DIR}/config" "${ROOTFS_DIR}/etc/shop-inventory/config"
+install -m 640 "${BASE_DIR}/config" "${ROOTFS_DIR}/etc/pantry/config"
 
 on_chroot << EOF
 chown -R root:${APP_GROUP} "${APP_ENV_DIR}"
@@ -58,7 +56,7 @@ chmod +x "${APP_INSTALL_DIR}/start.sh"
 chmod +x "${APP_INSTALL_DIR}/manage.py"
 
 echo "Configure nginx"
-ln -sf /etc/nginx/sites-available/nginx-shop-inventory.conf /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/nginx-pantry.conf /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 
 echo "Checking for and removing existing test database file if present"

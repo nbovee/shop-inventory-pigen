@@ -1,0 +1,39 @@
+# Configuration (should be created from config.example)
+config
+
+# Build artifacts
+deploy/
+work/
+*.img
+*.zip
+
+# Pre-commit
+.pre-commit-cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.log

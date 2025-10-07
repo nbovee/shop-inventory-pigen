@@ -1,12 +1,12 @@
 [Unit]
-Description=Shop WiFi Hotspot Setup
+Description=Pantry WiFi Hotspot Setup
 After=network.target NetworkManager.service dnsmasq.service
 Wants=dnsmasq.service
-Before=shop-inventory.service
+Before=pantry.service
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/shop-inventory/config
+EnvironmentFile=/etc/pantry/config
 # Using nmcli dev wifi hotspot command for simplified hotspot creation
 ExecStart=/bin/bash -c '\
     if [ -z "$WIFI_SSID" ] || [ -z "$WIFI_PASS" ]; then \
