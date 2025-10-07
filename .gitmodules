@@ -1,0 +1,8 @@
+[submodule "pi-gen"]
+	path = pi-gen
+	url = https://github.com/RPi-Distro/pi-gen/
+	branch = arm64
+	ignore = dirty
+[submodule "shop-inventory"]
+	path = stageApplication/00-application/shop-inventory
+	url = https://github.com/nbovee/shop-inventory/
