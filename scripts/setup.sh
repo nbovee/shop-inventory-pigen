@@ -15,5 +15,9 @@ touch pi-gen/stage5/SKIP_IMAGES pi-gen/stage5/SKIP_NOOBS
 [ -e pi-gen/stageAccessPoint ] || ln -s ../stageAccessPoint pi-gen/
 [ -e pi-gen/stageApplication ] || ln -s ../stageApplication pi-gen/
 
+## link build directory
+mkdir -p pi-gen/deploy
+[ -e deploy ] || ln -s pi-gen/deploy deploy
+
 cd - > /dev/null || exit
 
