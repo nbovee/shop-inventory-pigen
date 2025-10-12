@@ -14,6 +14,7 @@ touch pi-gen/stage5/SKIP_IMAGES pi-gen/stage5/SKIP_NOOBS
 # Create symlinks only if they don't exist
 [ -e pi-gen/stageAccessPoint ] || ln -s ../stageAccessPoint pi-gen/
 [ -e pi-gen/stageApplication ] || ln -s ../stageApplication pi-gen/
+[ -e pi-gen/config ] || ln -s ../config pi-gen/
 
 ## link build directory
 mkdir -p pi-gen/deploy

@@ -26,8 +26,8 @@ EOF
 
 echo "Copy project files from the files directory"
 # /pi-gen/work/rowanPantry/rootfs/
-cp -r files/shop-inventory/* "${ROOTFS_DIR}${APP_INSTALL_DIR}"
-install -m 640 files/requirements.txt "${ROOTFS_DIR}${APP_INSTALL_DIR}"
+cp -r shop-inventory/* "${ROOTFS_DIR}${APP_INSTALL_DIR}"
+install -m 640 shop-inventory/requirements.txt "${ROOTFS_DIR}${APP_INSTALL_DIR}"
 echo "Copying systemd service & configuration files"
 install -m 640 files/pantry.service "${ROOTFS_DIR}/etc/systemd/system/"
 install -m 640 files/nginx-pantry.conf "${ROOTFS_DIR}/etc/nginx/sites-available/"
@@ -52,8 +52,8 @@ echo "Set up permissions"
 chown -R ${APP_USER}:${APP_GROUP} "${APP_INSTALL_DIR}"
 chown -R ${APP_USER}:${APP_GROUP} "${APP_LOG_DIR}"
 chown -R ${APP_USER}:${APP_GROUP} "${APP_RUN_DIR}"
-chmod +x "${APP_INSTALL_DIR}/start.sh"
-chmod +x "${APP_INSTALL_DIR}/manage.py"
+chmod +x "${APP_INSTALL_DIR}/src/shop-inventory/start.sh"
+chmod +x "${APP_INSTALL_DIR}/src/shop-inventory/manage.py"
 
 echo "Configure nginx"
 ln -sf /etc/nginx/sites-available/nginx-pantry.conf /etc/nginx/sites-enabled/

@@ -12,11 +12,9 @@ source "${APP_INSTALL_DIR}/venv/bin/activate"
 echo "Confirming python & gunicorn are in the virtual environment"
 which python
 which gunicorn
-echo "Collecting static files"
-python manage.py collectstatic --noinput
 
-echo "Migrating database"
-python manage.py migrate --noinput
+echo "Running pytest to verify the build"
+pytest --cov=src/shop-inventory --cov-config=pyproject.toml
 
 USEREOF
 
