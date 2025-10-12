@@ -23,6 +23,7 @@ PIGEN_DOCKER_OPTS="--volume $(pwd)/stageAccessPoint:/pi-gen/stageAccessPoint --v
 
 # Application Directory Structure (directories created during image build)
 APP_INSTALL_DIR="/var/www/pantry"
+APP_SUB_PATH="/src/shop-inventory"        # Subdirectory path within APP_INSTALL_DIR
 APP_LOG_DIR="/var/log/pantry"
 APP_ENV_DIR="/etc/pantry"
 APP_RUN_DIR="/run/pantry"
@@ -38,6 +39,10 @@ APP_GROUP=www-data
 # WiFi Access Point Configuration
 WIFI_SSID=ProjectWiFi
 WIFI_PASS=wifi-password-here
+AP_GATEWAY_IP=10.42.0.1              # Gateway IP for the access point
+AP_DHCP_START=10.42.0.2              # DHCP range start
+AP_DHCP_END=10.42.0.254              # DHCP range end
+AP_NETMASK=255.255.255.0             # Subnet mask
 
 # Django Application Settings
 DJANGO_DEPLOYMENT_SITE=YourCity             # Site-specific identifier

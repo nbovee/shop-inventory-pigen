@@ -12,7 +12,7 @@ echo "Configure hostname"
 echo "${TARGET_HOSTNAME}" > /etc/hostname
 sed -i "s/127.0.1.1.*/127.0.1.1\t${TARGET_HOSTNAME}.local/" /etc/hosts
 # Add entries for the domain that clients will use
-echo "10.42.0.1\tpantry.local" >> /etc/hosts
+echo "${AP_GATEWAY_IP}\tpantry.local" >> /etc/hosts
 echo "127.0.0.1\tpantry.local" >> /etc/hosts
 
 echo "Create required directories"
@@ -29,16 +29,25 @@ echo "Copy project files from the files directory"
 cp -r shop-inventory/* "${ROOTFS_DIR}${APP_INSTALL_DIR}"
 install -m 640 shop-inventory/requirements.txt "${ROOTFS_DIR}${APP_INSTALL_DIR}"
 echo "Copying systemd service & configuration files"
-install -m 640 files/pantry.service "${ROOTFS_DIR}/etc/systemd/system/"
-install -m 640 files/nginx-pantry.conf "${ROOTFS_DIR}/etc/nginx/sites-available/"
-install -m 640 files/pantry-backup.service "${ROOTFS_DIR}/etc/systemd/system/"
+# Substitute APP_* variables in pantry.service
+envsubst '$APP_USER $APP_GROUP $APP_INSTALL_DIR $APP_SUB_PATH $APP_ENV_DIR' < files/pantry.service > "${ROOTFS_DIR}/etc/systemd/system/pantry.service"
+chmod 640 "${ROOTFS_DIR}/etc/systemd/system/pantry.service"
+# Substitute variables in nginx-pantry.conf
+envsubst '$TARGET_HOSTNAME $APP_LOG_DIR $APP_INSTALL_DIR $APP_RUN_DIR' < files/nginx-pantry.conf > "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
+chmod 640 "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
+# Substitute variables in pantry-backup.service
+envsubst '$APP_ENV_DIR' < files/pantry-backup.service > "${ROOTFS_DIR}/etc/systemd/system/pantry-backup.service"
+chmod 640 "${ROOTFS_DIR}/etc/systemd/system/pantry-backup.service"
 install -m 640 files/pantry-backup.timer "${ROOTFS_DIR}/etc/systemd/system/"
-install -m 640 files/pantry-socket.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
-install -m 640 files/pantry-logs.conf "${ROOTFS_DIR}/usr/lib/tmpfiles.d/"
+# Substitute variables in tmpfiles.d configs
+envsubst '$APP_RUN_DIR $APP_USER $APP_GROUP' < files/pantry-socket.conf > "${ROOTFS_DIR}/usr/lib/tmpfiles.d/pantry-socket.conf"
+chmod 640 "${ROOTFS_DIR}/usr/lib/tmpfiles.d/pantry-socket.conf"
+envsubst '$APP_LOG_DIR $APP_USER $APP_GROUP' < files/pantry-logs.conf > "${ROOTFS_DIR}/usr/lib/tmpfiles.d/pantry-logs.conf"
+chmod 640 "${ROOTFS_DIR}/usr/lib/tmpfiles.d/pantry-logs.conf"
 install -m 755 files/pantry-backup.sh "${ROOTFS_DIR}/usr/local/bin/"
 
 echo "Copying config file"
-install -m 640 "${BASE_DIR}/config" "${ROOTFS_DIR}/etc/pantry/config"
+install -m 640 "${BASE_DIR}/config" "${ROOTFS_DIR}${APP_ENV_DIR}/config"
 
 on_chroot << EOF
 chown -R root:${APP_GROUP} "${APP_ENV_DIR}"
@@ -52,8 +61,8 @@ echo "Set up permissions"
 chown -R ${APP_USER}:${APP_GROUP} "${APP_INSTALL_DIR}"
 chown -R ${APP_USER}:${APP_GROUP} "${APP_LOG_DIR}"
 chown -R ${APP_USER}:${APP_GROUP} "${APP_RUN_DIR}"
-chmod +x "${APP_INSTALL_DIR}/src/shop-inventory/start.sh"
-chmod +x "${APP_INSTALL_DIR}/src/shop-inventory/manage.py"
+chmod +x "${APP_INSTALL_DIR}${APP_SUB_PATH}/start.sh"
+chmod +x "${APP_INSTALL_DIR}${APP_SUB_PATH}/manage.py"
 
 echo "Configure nginx"
 ln -sf /etc/nginx/sites-available/nginx-pantry.conf /etc/nginx/sites-enabled/

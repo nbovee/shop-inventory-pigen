@@ -4,7 +4,8 @@
 set -e
 
 # Load configuration
-source /etc/pantry/config
+APP_ENV_DIR=${APP_ENV_DIR:-/etc/pantry}  # Default if not set by systemd
+source ${APP_ENV_DIR}/config
 
 # Create base mount directory with proper permissions
 MOUNT_BASE="/tmp/pantry-backup-mounts"
@@ -41,7 +42,7 @@ done
 
 
 # Run the Django backup command
-cd "${APP_INSTALL_DIR}"
+cd "${APP_INSTALL_DIR}${APP_SUB_PATH}"
 
 # Activate virtual environment
 source "${APP_INSTALL_DIR}/venv/bin/activate"
