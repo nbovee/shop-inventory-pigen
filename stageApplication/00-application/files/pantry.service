@@ -1,4 +1,4 @@
-# Uses APP_USER, APP_GROUP, APP_INSTALL_DIR from config
+# Uses APP_USER, APP_GROUP, APP_INSTALL_DIR, APP_SUB_PATH, APP_ENV_DIR from config
 [Unit]
 Description=Rowan Shop & Pantry Inventory System
 After=network.target
@@ -9,6 +9,7 @@ User=${APP_USER}
 Group=${APP_GROUP}
 RuntimeDirectory=pantry
 WorkingDirectory=${APP_INSTALL_DIR}${APP_SUB_PATH}
+Environment="APP_ENV_DIR=${APP_ENV_DIR}"
 EnvironmentFile=${APP_ENV_DIR}/config
 ExecStart=/bin/bash start.sh
 ExecReload=/bin/kill -s HUP $MAINPID

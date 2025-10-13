@@ -6,6 +6,7 @@
 export APP_USER APP_GROUP APP_INSTALL_DIR APP_SUB_PATH APP_ENV_DIR
 export TARGET_HOSTNAME APP_LOG_DIR APP_RUN_DIR
 export AP_GATEWAY_IP AP_DHCP_START AP_DHCP_END AP_NETMASK
+export DJANGO_SQLITE_DIR DJANGO_STATIC_ROOT DJANGO_MEDIA_ROOT
 
 on_chroot << EOF
 echo " adding user:"${APP_USER}" to group:"${APP_GROUP}""
@@ -22,8 +23,9 @@ echo "127.0.0.1\tpantry.local" >> /etc/hosts
 
 echo "Create required directories"
 mkdir -p "${APP_INSTALL_DIR}"
-mkdir -p "${APP_INSTALL_DIR}/${DJANGO_SQLITE_DIR}"
-mkdir -p "${APP_INSTALL_DIR}/${DJANGO_STATIC_ROOT}"
+mkdir -p "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_SQLITE_DIR}"
+mkdir -p "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_STATIC_ROOT}"
+mkdir -p "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_MEDIA_ROOT}"
 mkdir -p "${APP_ENV_DIR}"
 mkdir -p "${APP_LOG_DIR}"
 mkdir -p "${APP_RUN_DIR}"
@@ -38,7 +40,7 @@ echo "Copying systemd service & configuration files"
 envsubst '$APP_USER $APP_GROUP $APP_INSTALL_DIR $APP_SUB_PATH $APP_ENV_DIR' < files/pantry.service > "${ROOTFS_DIR}/etc/systemd/system/pantry.service"
 chmod 640 "${ROOTFS_DIR}/etc/systemd/system/pantry.service"
 # Substitute variables in nginx-pantry.conf
-envsubst '$TARGET_HOSTNAME $APP_LOG_DIR $APP_INSTALL_DIR $APP_RUN_DIR' < files/nginx-pantry.conf > "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
+envsubst '$TARGET_HOSTNAME $APP_LOG_DIR $APP_INSTALL_DIR $APP_SUB_PATH $APP_RUN_DIR $DJANGO_STATIC_ROOT' < files/nginx-pantry.conf > "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
 chmod 640 "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
 # Substitute variables in pantry-backup.service
 envsubst '$APP_ENV_DIR' < files/pantry-backup.service > "${ROOTFS_DIR}/etc/systemd/system/pantry-backup.service"
@@ -68,15 +70,19 @@ chown -R ${APP_USER}:${APP_GROUP} "${APP_LOG_DIR}"
 chown -R ${APP_USER}:${APP_GROUP} "${APP_RUN_DIR}"
 chmod +x "${APP_INSTALL_DIR}${APP_SUB_PATH}/start.sh"
 chmod +x "${APP_INSTALL_DIR}${APP_SUB_PATH}/manage.py"
+# Ensure Django runtime directories are writable
+chmod 775 "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_SQLITE_DIR}"
+chmod 775 "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_STATIC_ROOT}"
+chmod 775 "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_MEDIA_ROOT}"
 
 echo "Configure nginx"
 ln -sf /etc/nginx/sites-available/nginx-pantry.conf /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 
 echo "Checking for and removing existing test database file if present"
-if [ -f "${APP_INSTALL_DIR}/${DJANGO_SQLITE_DIR}/testdb.sqlite3" ]; then
+if [ -f "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_SQLITE_DIR}/testdb.sqlite3" ]; then
     echo "Removing existing database file"
-    rm -f "${APP_INSTALL_DIR}/${DJANGO_SQLITE_DIR}/testdb.sqlite3"
+    rm -f "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_SQLITE_DIR}/testdb.sqlite3"
 fi
 
 EOF

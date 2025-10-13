@@ -8,7 +8,7 @@ APP_ENV_DIR=${APP_ENV_DIR:-/etc/pantry}  # Default if not set by systemd
 source ${APP_ENV_DIR}/config
 
 # Create base mount directory with proper permissions
-MOUNT_BASE="/tmp/pantry-backup-mounts"
+MOUNT_BASE="${BACKUP_MOUNT_DIR:-/tmp/pantry-backup-mounts}"
 if [ ! -d "$MOUNT_BASE" ]; then
     mkdir -p "$MOUNT_BASE"
     chmod 755 "$MOUNT_BASE"
@@ -34,7 +34,7 @@ for device in $(lsblk -rno NAME,TRAN | grep "sd[a|b][0-9]" | cut -d' ' -f1); do
             echo "Failed to mount $dev_path"
         fi
     else
-        echo "$dev_path is already mounted"
+        echo "$dev_path is already mounted at $mount_point"
     fi
 done
 

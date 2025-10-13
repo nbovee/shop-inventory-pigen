@@ -73,6 +73,7 @@ DJANGO_ADMIN_PASSWORD=                      # Should be unique per installation
 # Backup Settings
 DJANGO_BACKUP_PASSWORD=change-this-backup-password  # Should be unique per installation
 BACKUP_PASSWORD=${DJANGO_BACKUP_PASSWORD}
+BACKUP_MOUNT_DIR=/tmp/pantry-backup-mounts  # Directory for mounting USB backup drives
 
 # Gunicorn Web Server Settings
 SHOP_GUNICORN_WORKERS=3
