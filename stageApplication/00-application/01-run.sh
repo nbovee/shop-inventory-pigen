@@ -2,6 +2,11 @@
 
 . "${BASE_DIR}/config"
 
+# Export variables for envsubst
+export APP_USER APP_GROUP APP_INSTALL_DIR APP_SUB_PATH APP_ENV_DIR
+export TARGET_HOSTNAME APP_LOG_DIR APP_RUN_DIR
+export AP_GATEWAY_IP AP_DHCP_START AP_DHCP_END AP_NETMASK
+
 on_chroot << EOF
 echo " adding user:"${APP_USER}" to group:"${APP_GROUP}""
 usermod -aG "${APP_GROUP}" "${APP_USER}"

@@ -1,25 +1,13 @@
 [Unit]
 Description=Pantry WiFi Hotspot Setup
-After=network.target NetworkManager.service
+After=network.target NetworkManager.service NetworkManager-wait-online.service
+Wants=NetworkManager-wait-online.service
 Before=dnsmasq.service pantry.service
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/pantry/config
-# Using nmcli dev wifi hotspot command for simplified hotspot creation
-ExecStart=/bin/bash -c '\
-    if [ -z "$WIFI_SSID" ] || [ -z "$WIFI_PASS" ]; then \
-        echo "ERROR: WIFI_SSID and WIFI_PASS must be set in config"; \
-        exit 1; \
-    fi && \
-    if ! nmcli c show "Hotspot" > /dev/null 2>&1; then \
-        nmcli dev wifi hotspot ifname wlan0 ssid "$WIFI_SSID" password "$WIFI_PASS"; \
-    else \
-        nmcli c up "Hotspot"; \
-    fi && \
-    sleep 3 && \
-    ip addr show wlan0 | grep -q "$AP_GATEWAY_IP" && \
-    echo "Hotspot ready with IP $AP_GATEWAY_IP"'
+Environment="APP_ENV_DIR=${APP_ENV_DIR}"
+ExecStart=/usr/local/bin/pantry-wifi-setup.sh
 RemainAfterExit=yes
 
 [Install]
