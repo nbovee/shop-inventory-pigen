@@ -17,6 +17,7 @@ TIMEZONE_DEFAULT="America/New_York"         # System timezone
 ENABLE_SSH=1
 STAGE_LIST="stage0 stage1 stage2 stageAccessPoint stageApplication"
 PRESERVE_CONTAINER=1
+CLEAN=0
 WPA_COUNTRY=US
 # note this uses Unix style brackets to get pwd envs/paths due to our use of WSL
 PIGEN_DOCKER_OPTS="--volume $(pwd)/stageAccessPoint:/pi-gen/stageAccessPoint --volume $(pwd)/stageApplication:/pi-gen/stageApplication"
@@ -76,8 +77,8 @@ BACKUP_PASSWORD=${DJANGO_BACKUP_PASSWORD}
 BACKUP_MOUNT_DIR=/tmp/pantry-backup-mounts  # Directory for mounting USB backup drives
 
 # Gunicorn Web Server Settings
-SHOP_GUNICORN_WORKERS=3
-SHOP_GUNICORN_TIMEOUT=120
-SHOP_GUNICORN_LOG_LEVEL=info
-SHOP_GUNICORN_MAX_REQUESTS=1000
-SHOP_GUNICORN_MAX_REQUESTS_JITTER=100
+GUNICORN_WORKERS=3
+GUNICORN_TIMEOUT=120
+GUNICORN_LOG_LEVEL=info
+GUNICORN_MAX_REQUESTS=1000
+GUNICORN_MAX_REQUESTS_JITTER=100

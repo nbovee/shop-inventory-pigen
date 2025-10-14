@@ -7,9 +7,9 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT" || exit
 
 # Apply skipfiles and symlinks to
-touch pi-gen/stage2/SKIP_IMAGES pi-gen/stage2/SKIP_NOOBS
-touch pi-gen/stage4/SKIP_IMAGES pi-gen/stage4/SKIP_NOOBS
-touch pi-gen/stage5/SKIP_IMAGES pi-gen/stage5/SKIP_NOOBS
+touch pi-gen/stage2/SKIP_IMAGES pi-gen/stage2/SKIP_IMAGES
+touch pi-gen/stage4/SKIP_IMAGES pi-gen/stage4/SKIP_IMAGES
+touch pi-gen/stage5/SKIP_IMAGES pi-gen/stage5/SKIP_IMAGES
 
 # Create symlinks only if they don't exist
 [ -e pi-gen/stageAccessPoint ] || ln -s ../stageAccessPoint pi-gen/

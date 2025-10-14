@@ -1,0 +1,13 @@
+[Unit]
+Description=Pantry Captive Portal Firewall
+After=network.target pantry-wifi-setup.service
+Before=dnsmasq.service pantry.service
+
+[Service]
+Type=oneshot
+Environment="APP_ENV_DIR=${APP_ENV_DIR}"
+ExecStart=/usr/local/bin/pantry-firewall.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

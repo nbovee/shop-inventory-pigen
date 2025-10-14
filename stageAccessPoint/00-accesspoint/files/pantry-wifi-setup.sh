@@ -33,6 +33,16 @@ done
 if ! nmcli c show "Hotspot" > /dev/null 2>&1; then
     echo "Creating new hotspot..."
     nmcli dev wifi hotspot ifname wlan0 ssid "$WIFI_SSID" password "$WIFI_PASS"
+
+    # Disable internet sharing - modify connection to prevent NAT/forwarding
+    echo "Disabling internet sharing on hotspot..."
+    nmcli connection modify "Hotspot" ipv4.method manual
+    nmcli connection modify "Hotspot" ipv4.addresses "$AP_GATEWAY_IP/24"
+    nmcli connection modify "Hotspot" ipv4.never-default yes
+
+    # Reactivate with new settings
+    nmcli connection down "Hotspot"
+    nmcli connection up "Hotspot"
 else
     echo "Activating existing hotspot..."
     nmcli c up "Hotspot"
