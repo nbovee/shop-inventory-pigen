@@ -29,6 +29,17 @@ mkdir -p "${APP_INSTALL_DIR}${APP_SUB_PATH}/${DJANGO_MEDIA_ROOT}"
 mkdir -p "${APP_ENV_DIR}"
 mkdir -p "${APP_LOG_DIR}"
 mkdir -p "${APP_RUN_DIR}"
+mkdir -p "/etc/nginx/ssl"
+
+echo "Generate self-signed SSL certificate"
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+  -keyout "/etc/nginx/ssl/${TARGET_HOSTNAME}.key" \
+  -out "/etc/nginx/ssl/${TARGET_HOSTNAME}.crt" \
+  -subj "/C=US/ST=State/L=City/O=Organization/CN=${TARGET_HOSTNAME}" \
+  -addext "subjectAltName=DNS:${TARGET_HOSTNAME},DNS:www.${TARGET_HOSTNAME},DNS:${TARGET_HOSTNAME}.local,IP:${AP_GATEWAY_IP}"
+
+chmod 600 "/etc/nginx/ssl/${TARGET_HOSTNAME}.key"
+chmod 644 "/etc/nginx/ssl/${TARGET_HOSTNAME}.crt"
 EOF
 
 echo "Copy project files from the files directory"
