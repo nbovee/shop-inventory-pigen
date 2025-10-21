@@ -42,6 +42,12 @@ chmod 600 "/etc/nginx/ssl/${TARGET_HOSTNAME}.key"
 chmod 644 "/etc/nginx/ssl/${TARGET_HOSTNAME}.crt"
 EOF
 
+echo "Export certificate to pi-gen/deploy folder for iPad installation"
+mkdir -p "${BASE_DIR}/../deploy"
+cp "${ROOTFS_DIR}/etc/nginx/ssl/${TARGET_HOSTNAME}.crt" "${BASE_DIR}/../deploy/${TARGET_HOSTNAME}.crt"
+chmod 644 "${BASE_DIR}/../deploy/${TARGET_HOSTNAME}.crt"
+echo "Certificate exported to: ${BASE_DIR}/../deploy/${TARGET_HOSTNAME}.crt"
+
 echo "Copy project files from the files directory"
 # /pi-gen/work/rowanPantry/rootfs/
 cp -r shop-inventory/* "${ROOTFS_DIR}${APP_INSTALL_DIR}"
