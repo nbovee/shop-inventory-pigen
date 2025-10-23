@@ -31,6 +31,8 @@ APP_RUN_DIR="/run/pantry"
 APP_USER="${FIRST_USER_NAME}"
 APP_GROUP=www-data
 
+# SSL/HTTPS Configuration (baked into image)
+ENABLE_SSL=false                          # Enable SSL/HTTPS (false by default)
 
 # =============================================================================
 # [RUNTIME] - Can differ between installations

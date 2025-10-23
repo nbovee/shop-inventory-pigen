@@ -31,22 +31,20 @@ mkdir -p "${APP_LOG_DIR}"
 mkdir -p "${APP_RUN_DIR}"
 mkdir -p "/etc/nginx/ssl"
 
-echo "Generate self-signed SSL certificate"
-openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
-  -keyout "/etc/nginx/ssl/${TARGET_HOSTNAME}.key" \
-  -out "/etc/nginx/ssl/${TARGET_HOSTNAME}.crt" \
-  -subj "/C=US/ST=State/L=City/O=Organization/CN=${TARGET_HOSTNAME}" \
-  -addext "subjectAltName=DNS:${TARGET_HOSTNAME},DNS:www.${TARGET_HOSTNAME},DNS:${TARGET_HOSTNAME}.local,IP:${AP_GATEWAY_IP}"
+if [ "${ENABLE_SSL}" = "true" ]; then
+  echo "Generating self-signed SSL certificate..."
+  openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+    -keyout "/etc/nginx/ssl/${TARGET_HOSTNAME}.key" \
+    -out "/etc/nginx/ssl/${TARGET_HOSTNAME}.crt" \
+    -subj "/C=US/ST=State/L=City/O=Organization/CN=${TARGET_HOSTNAME}" \
+    -addext "subjectAltName=DNS:${TARGET_HOSTNAME},DNS:www.${TARGET_HOSTNAME},DNS:${TARGET_HOSTNAME}.local,IP:${AP_GATEWAY_IP}"
 
-chmod 600 "/etc/nginx/ssl/${TARGET_HOSTNAME}.key"
-chmod 644 "/etc/nginx/ssl/${TARGET_HOSTNAME}.crt"
+  chmod 600 "/etc/nginx/ssl/${TARGET_HOSTNAME}.key"
+  chmod 644 "/etc/nginx/ssl/${TARGET_HOSTNAME}.crt"
+else
+  echo "Skipping SSL certificate generation (ENABLE_SSL=false)"
+fi
 EOF
-
-echo "Export certificate to pi-gen/deploy folder for iPad installation"
-mkdir -p "${BASE_DIR}/../deploy"
-cp "${ROOTFS_DIR}/etc/nginx/ssl/${TARGET_HOSTNAME}.crt" "${BASE_DIR}/../deploy/${TARGET_HOSTNAME}.crt"
-chmod 644 "${BASE_DIR}/../deploy/${TARGET_HOSTNAME}.crt"
-echo "Certificate exported to: ${BASE_DIR}/../deploy/${TARGET_HOSTNAME}.crt"
 
 echo "Copy project files from the files directory"
 # /pi-gen/work/rowanPantry/rootfs/
@@ -56,8 +54,14 @@ echo "Copying systemd service & configuration files"
 # Substitute APP_* variables in pantry.service
 envsubst '$APP_USER $APP_GROUP $APP_INSTALL_DIR $APP_SUB_PATH $APP_ENV_DIR' < files/pantry.service > "${ROOTFS_DIR}/etc/systemd/system/pantry.service"
 chmod 640 "${ROOTFS_DIR}/etc/systemd/system/pantry.service"
-# Substitute variables in nginx-pantry.conf
-envsubst '$TARGET_HOSTNAME $APP_LOG_DIR $APP_INSTALL_DIR $APP_SUB_PATH $APP_RUN_DIR $DJANGO_STATIC_ROOT' < files/nginx-pantry.conf > "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
+# Substitute variables in nginx config (use SSL or HTTP-only version based on ENABLE_SSL)
+if [ "${ENABLE_SSL}" = "true" ]; then
+  echo "Using HTTPS nginx configuration (ENABLE_SSL=true)"
+  envsubst '$TARGET_HOSTNAME $APP_LOG_DIR $APP_INSTALL_DIR $APP_SUB_PATH $APP_RUN_DIR $DJANGO_STATIC_ROOT' < files/nginx-pantry-https.conf > "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
+else
+  echo "Using HTTP-only nginx configuration (ENABLE_SSL=false)"
+  envsubst '$TARGET_HOSTNAME $APP_LOG_DIR $APP_INSTALL_DIR $APP_SUB_PATH $APP_RUN_DIR $DJANGO_STATIC_ROOT' < files/nginx-pantry-http.conf > "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
+fi
 chmod 640 "${ROOTFS_DIR}/etc/nginx/sites-available/nginx-pantry.conf"
 # Substitute variables in pantry-backup.service
 envsubst '$APP_ENV_DIR' < files/pantry-backup.service > "${ROOTFS_DIR}/etc/systemd/system/pantry-backup.service"
